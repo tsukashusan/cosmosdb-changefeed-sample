@@ -14,34 +14,39 @@ namespace Company.Function
         }
 
         [Function("CosmosTrigger1")]
-        [CosmosDBOutput(databaseName: "%OutputDatabase%", containerName: "%OutputContainerName%", Connection = "CosmosDBConnectionString", PartitionKey = "/Number", CreateIfNotExists = true)]
+        [CosmosDBOutput(databaseName: "%OutputDatabase%", containerName: "%OutputContainerName%", Connection = "CosmosDBConnectionString", PartitionKey = "/id", CreateIfNotExists = true)]
         public object? Run([CosmosDBTrigger(
             databaseName: "%InputDatabase%",
             containerName: "%InputContainerName%",
             CreateLeaseContainerIfNotExists = true,
             Connection = "CosmosDBConnectionString",
-            LeaseContainerName = "leases")] IReadOnlyList<MyDocument> input)
+            LeaseContainerName = "leases")] IReadOnlyList<Order> input,
+            FunctionContext context)
         {
             if (input != null && input.Count > 0)
             {
-                _logger.LogInformation("Documents modified: " + input.Count);
-                _logger.LogInformation("First document Id: " + input[0].id);
+                _logger.LogInformation("Documents count: " + input.Count);
+               _logger.LogInformation($"document : {JsonConvert.SerializeObject(input[0])}");
             }
-
-        
-            return JsonConvert.SerializeObject(input);
+            return input;
         }
     }
 
-    public class MyDocument
+    public class Order
     {
-        [JsonProperty("id")]
+        [JsonProperty(PropertyName = "id")]
         public string? id { get; set; }
+        public string? customer { get; set; }
+        public IList<OrderDetail>? detail { get; set; }
+        public bool delete { get; set; }
 
-        public string? Text { get; set; }
-
-        public int Number { get; set; }
-
-        public bool Boolean { get; set; }
+        public class OrderDetail
+        {
+            public decimal unitprice { get; set; }
+            public string? productName { get; set; }
+            public int quantity { get; set; }
+            public decimal discount { get; set; }
+            public string? vendor { get; set; }
+        }
     }
 }
