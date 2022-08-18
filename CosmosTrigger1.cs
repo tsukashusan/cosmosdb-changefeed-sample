@@ -26,7 +26,7 @@ namespace Company.Function
             if (input != null && input.Count > 0)
             {
                 _logger.LogInformation("Documents count: " + input.Count);
-               _logger.LogInformation($"document : {JsonConvert.SerializeObject(input[0])}");
+                _logger.LogInformation($"document : {JsonConvert.SerializeObject(input[0])}");
             }
             return input;
         }
@@ -37,7 +37,7 @@ namespace Company.Function
         [JsonProperty(PropertyName = "id")]
         public string? id { get; set; }
         public string? customer { get; set; }
-        public IList<OrderDetail>? detail { get; set; }
+        public IList<OrderDetail>? details { get; set; }
         public bool delete { get; set; }
 
         public class OrderDetail
